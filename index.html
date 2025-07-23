@@ -40,11 +40,8 @@
             z-index: 100;
         }
 
-        .header h1 {
-            color: var(--offwhite);
-            font-family: 'Mali', sans-serif;
-            font-size: clamp(2rem, 6vw, 2.5rem);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        .header img {
+            max-width: 150px;
             margin-bottom: 12px;
         }
 
@@ -52,6 +49,26 @@
             color: rgba(255,255,255,0.85);
             font-size: clamp(1rem, 3.5vw, 1.1rem);
             margin-bottom: 20px;
+        }
+
+        .user-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .login-btn, .logout-btn {
+            background: var(--gold);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            font-family: 'Sarabun', sans-serif;
         }
 
         .search-bar {
@@ -248,7 +265,7 @@
             transform: translateX(0);
         }
 
-        .cart-modal {
+        .cart-modal, .login-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -261,7 +278,7 @@
             justify-content: center;
         }
 
-        .cart-modal-content {
+        .cart-modal-content, .login-modal-content {
             background: var(--offwhite);
             border-radius: 12px;
             padding: 25px;
@@ -326,6 +343,38 @@
             font-size: 1.1rem;
         }
 
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .login-form input {
+            padding: 10px;
+            border: 2px solid var(--green);
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .login-form button {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .login-form button:hover {
+            background: var(--gold);
+        }
+
         @media (max-width: 768px) {
             .products-grid {
                 grid-template-columns: 1fr;
@@ -365,8 +414,12 @@
 </head>
 <body>
     <header class="header">
-        <h1>🌱 Veggie Grow Shop</h1>
+        <img src="https://i.ibb.co/zHF9NXF4/logo.png" alt="Veggie Grow Logo">
         <p>อุปกรณ์ IoT เสริมเกม Veggie Grow</p>
+        <div class="user-controls">
+            <button class="login-btn" id="loginBtn">เข้าสู่ระบบ</button>
+            <button class="logout-btn" id="logoutBtn" style="display: none;">ออกจากระบบ</button>
+        </div>
         <div class="search-bar">
             <input type="text" class="search-input" placeholder="ค้นหาอุปกรณ์ฟาร์ม..." id="searchInput">
         </div>
@@ -406,6 +459,18 @@
         </div>
     </div>
 
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-content">
+            <button class="close-btn" id="closeLogin">✕</button>
+            <h2>เข้าสู่ระบบ</h2>
+            <div class="login-form">
+                <input type="text" id="username" placeholder="ชื่อผู้ใช้">
+                <input type="password" id="password" placeholder="รหัสผ่าน">
+                <button onclick="mockLogin()">เข้าสู่ระบบ</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const products = [
             { id: 1, name: 'pH Sensor Pro', category: 'sensors', price: 499.00, priceDisplay: '฿499.00', icon: '📊', description: 'เซ็นเซอร์วัดค่า pH ในดินแบบเรียลไทม์ พร้อมแจ้งเตือนผ่านแอป' },
@@ -432,6 +497,7 @@
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let currentCategory = 'all';
+        let isLoggedIn = false;
 
         function saveCart() {
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -451,7 +517,7 @@
                         <div class="product-price">${product.priceDisplay}</div>
                         <div class="product-description">${product.description}</div>
                     </div>
-                    <button class="buy-btn" onclick="addToCart(${product.id})">เพิ่มลงตะกร้า</button>
+                    <button class="buy-btn" onclick="addToCart(${product.id})" ${!isLoggedIn ? 'disabled' : ''}>เพิ่มลงตะกร้า</button>
                 `;
                 
                 productCard.style.opacity = '0';
@@ -467,6 +533,10 @@
         }
 
         function addToCart(productId) {
+            if (!isLoggedIn) {
+                showNotification('กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้า');
+                return;
+            }
             const product = products.find(p => p.id === productId);
             const cartItem = cart.find(item => item.id === productId);
             if (cartItem) {
@@ -476,7 +546,7 @@
             }
             saveCart();
             updateCartCount();
-            showNotification();
+            showNotification('เพิ่มสินค้าเรียบร้อย!');
         }
 
         function updateCartCount() {
@@ -484,8 +554,9 @@
             document.getElementById('cartCount').textContent = totalItems;
         }
 
-        function showNotification() {
+        function showNotification(message) {
             const notification = document.getElementById('notification');
+            notification.textContent = message;
             notification.classList.add('show');
             setTimeout(() => {
                 notification.classList.remove('show');
@@ -550,6 +621,32 @@
             }
         }
 
+        function mockLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username && password) {
+                isLoggedIn = true;
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'block';
+                document.getElementById('loginModal').style.display = 'none';
+                showNotification('เข้าสู่ระบบสำเร็จ!');
+                renderProducts();
+            } else {
+                showNotification('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
+            }
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            cart = [];
+            saveCart();
+            updateCartCount();
+            showNotification('ออกจากระบบเรียบร้อย!');
+            renderProducts();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts();
             updateCartCount();
@@ -565,8 +662,16 @@
             const cartBtn = document.getElementById('cartBtn');
             const cartModal = document.getElementById('cartModal');
             const closeCart = document.getElementById('closeCart');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginModal = document.getElementById('loginModal');
+            const closeLogin = document.getElementById('closeLogin');
 
             cartBtn.addEventListener('click', () => {
+                if (!isLoggedIn) {
+                    showNotification('กรุณาเข้าสู่ระบบก่อนดูตะกร้า');
+                    return;
+                }
                 renderCart();
                 cartModal.style.display = 'flex';
             });
@@ -580,6 +685,22 @@
                     cartModal.style.display = 'none';
                 }
             });
+
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+
+            closeLogin.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
+            });
+
+            logoutBtn.addEventListener('click', logout);
         });
     </script>
 </body>
