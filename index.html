@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 Veggie Grow Shop - อุปกรณ์ฟาร์มอัจฉริยะ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --yellow: #ffeb99;
+            --orange: #f4a261;
+            --green: #6b9e3b;
+            --gold: #e8b923;
+            --amber: #e76f51;
+            --red: #d00000;
+            --offwhite: #f8f1e9;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(180deg, var(--offwhite) 0%, #e9f5db 100%);
+            min-height: 100vh;
+            color: #2d2d2d;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(180deg, var(--green), #4a7e24);
+            padding: 30px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: var(--offwhite);
+            font-family: 'Mali', sans-serif;
+            font-size: clamp(2rem, 6vw, 2.5rem);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.85);
+            font-size: clamp(1rem, 3.5vw, 1.1rem);
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 25px;
+            border: 2px solid var(--green);
+            border-radius: 30px;
+            font-size: clamp(0.95rem, 3vw, 1rem);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            gap: 12px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category-btn {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            min-width: 110px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .products-container {
+            padding: 20px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--offwhite);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .product-icon {
+            font-size: clamp(2.8rem, 8vw, 3.2rem);
+            margin-bottom: 15px;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 700;
+            color: var(--green);
+            margin-bottom: 8px;
+            font-size: clamp(1.2rem, 3.5vw, 1.3rem);
+        }
+
+        .product-price {
+            color: var(--red);
+            font-weight: 700;
+            font-size: clamp(1.3rem, 4vw, 1.4rem);
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            color: #4a4a4a;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .buy-btn {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.95rem, 2.8vw, 1rem);
+            width: 100%;
+            max-width: 180px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .buy-btn:hover {
+            background: var(--gold);
+            transform: scale(1.03);
+        }
+
+        .cart-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-float:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--yellow);
+            color: var(--red);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--green);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            transform: translateX(300px);
+            transition: transform 0.3s ease;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-modal-content {
+            background: var(--offwhite);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item span {
+            flex: 1 1 auto;
+            max-width: 60%;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+        }
+
+        .cart-item button {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
+            flex: 0 0 auto;
+        }
+
+        .cart-total {
+            font-weight: 700;
+            text-align: right;
+            margin-top: 20px;
+            font-size: clamp(1.1rem, 3.5vw, 1.2rem);
+            color: var(--red);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-btn {
+                min-width: 90px;
+                padding: 10px 20px;
+            }
+
+            .cart-float {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .cart-count {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cart-item span {
+                max-width: 100%;
+            }
+
+            .cart-item button {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🌱 Veggie Grow Shop</h1>
+        <p>อุปกรณ์ IoT เสริมเกม Veggie Grow</p>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="ค้นหาอุปกรณ์ฟาร์ม..." id="searchInput">
+        </div>
+    </header>
+
+    <div class="categories">
+        <button class="category-btn active" data-category="all">ทั้งหมด</button>
+        <button class="category-btn" data-category="sensors">เซ็นเซอร์</button>
+        <button class="category-btn" data-category="automation">ระบบอัตโนมัติ</button>
+        <button class="category-btn" data-category="monitoring">ตรวจสอบ</button>
+        <button class="category-btn" data-category="irrigation">รดน้ำ</button>
+        <button class="category-btn" data-category="lighting">แสงไฟ</button>
+        <button class="category-btn" data-category="nutrients">สารอาหาร</button>
+    </div>
+
+    <div class="products-container">
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <button class="cart-float" id="cartBtn">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <div class="notification" id="notification">
+        เพิ่มสินค้าเข้าตะกร้าเรียบร้อย!
+    </div>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-modal-content">
+            <button class="close-btn" id="closeCart">✕</button>
+            <h2>ตะกร้าสินค้าของคุณ</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal">ยอดรวม: ฿0</div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: 'pH Sensor Pro', category: 'sensors', price: 499.00, priceDisplay: '฿499.00', icon: '📊', description: 'เซ็นเซอร์วัดค่า pH ในดินแบบเรียลไทม์ พร้อมแจ้งเตือนผ่านแอป' },
+            { id: 2, name: 'Moisture Detector', category: 'sensors', price: 399.00, priceDisplay: '฿399.00', icon: '💧', description: 'ตรวจจับความชื้นในดิน ช่วยประหยัดน้ำและเพิ่มผลผลิต' },
+            { id: 3, name: 'Temperature Sensor', category: 'sensors', price: 299.00, priceDisplay: '฿299.00', icon: '🌡️', description: 'วัดอุณหภูมิและความชื้น บันทึกข้อมูลตลอด 24 ชม.' },
+            { id: 4, name: 'Light Sensor', category: 'sensors', price: 249.00, priceDisplay: '฿249.00', icon: '☀️', description: 'วัดแสงสำหรับพืช ควบคุมการเติบโตอย่างเหมาะสม' },
+            { id: 5, name: 'Smart Watering System', category: 'automation', price: 499.00, priceDisplay: '฿499.00', icon: '🚿', description: 'ระบบรดน้ำอัจฉริยะ รดน้ำตามความต้องการของพืช' },
+            { id: 6, name: 'Auto Fertilizer', category: 'automation', price: 449.00, priceDisplay: '฿449.00', icon: '🧪', description: 'ระบบให้ปุ๋ยอัตโนมัติ ปรับปริมาณตามความเหมาะสม' },
+            { id: 7, name: 'Climate Controller', category: 'automation', price: 499.00, priceDisplay: '฿499.00', icon: '🎛️', description: 'ควบคุมสภาพอากาศในโรงเรือน รักษาอุณหภูมิและความชื้น' },
+            { id: 8, name: 'Farm Dashboard', category: 'monitoring', price: 399.00, priceDisplay: '฿399.00', icon: '📱', description: 'แอปตรวจสอบฟาร์ม ดูข้อมูลเรียลไทม์ทุกที่ทุกเวลา' },
+            { id: 9, name: 'Security Camera', category: 'monitoring', price: 449.00, priceDisplay: '฿449.00', icon: '📹', description: 'กล้องวงจรปิด มี Night Vision และระบบแจ้งเตือน' },
+            { id: 10, name: 'Data Logger', category: 'monitoring', price: 349.00, priceDisplay: '฿349.00', icon: '📈', description: 'บันทึกข้อมูลการเจริญเติบโต วิเคราะห์และปรับปรุงผลผลิต' },
+            { id: 11, name: 'Drip Irrigation Kit', category: 'irrigation', price: 299.00, priceDisplay: '฿299.00', icon: '💦', description: 'ชุดรดน้ำแบบหยด ประหยัดน้ำ 50% เหมาะสำหรับผัก' },
+            { id: 12, name: 'Sprinkler System', category: 'irrigation', price: 399.00, priceDisplay: '฿399.00', icon: '🌊', description: 'สปริงเกอร์อัตโนมัติ ครอบคลุมพื้นที่กว้าง ปรับระยะได้' },
+            { id: 13, name: 'Water Timer', category: 'irrigation', price: 249.00, priceDisplay: '฿249.00', icon: '⏰', description: 'ตั้งเวลารดน้ำ โปรแกรมได้ 8 ช่วงเวลาต่อวัน' },
+            { id: 14, name: 'LED Grow Light', category: 'lighting', price: 399.00, priceDisplay: '฿399.00', icon: '💡', description: 'ไฟ LED ปลูกพืช Full Spectrum ประหยัดไฟ 80%' },
+            { id: 15, name: 'Solar Panel Kit', category: 'lighting', price: 499.00, priceDisplay: '฿499.00', icon: '🔆', description: 'แผงโซลาร์ 100W พร้อมแบตเตอรี่สำหรับฟาร์ม' },
+            { id: 16, name: 'Smart Light Timer', category: 'lighting', price: 299.00, priceDisplay: '฿299.00', icon: '🔅', description: 'ควบคุมแสงอัตโนมัติ จำลองแสงธรรมชาติ' },
+            { id: 17, name: 'Hydroponic Nutrients', category: 'nutrients', price: 249.00, priceDisplay: '฿249.00', icon: '🧬', description: 'สารอาหารสำหรับปลูกไร้ดิน เพิ่มผลผลิต 200%' },
+            { id: 18, name: 'Organic Fertilizer', category: 'nutrients', price: 199.00, priceDisplay: '฿199.00', icon: '🌿', description: 'ปุ๋ยอินทรีย์ 100% ปลอดภัยต่อสิ่งแวดล้อม' },
+            { id: 19, name: 'Nutrient Monitor', category: 'nutrients', price: 349.00, priceDisplay: '฿349.00', icon: '⚗️', description: 'ตรวจวัดสารอาหารในน้ำ วัด NPK และ EC แม่นยำ' },
+            { id: 20, name: 'pH Buffer Solution', category: 'nutrients', price: 149.00, priceDisplay: '฿149.00', icon: '🧪', description: 'สารละลายปรับ pH ช่วยพืชดูดซึมสารอาหาร' }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentCategory = 'all';
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function renderProducts(productsToShow = products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            productsToShow.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-icon">${product.icon}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.priceDisplay}</div>
+                        <div class="product-description">${product.description}</div>
+                    </div>
+                    <button class="buy-btn" onclick="addToCart(${product.id})">เพิ่มลงตะกร้า</button>
+                `;
+                
+                productCard.style.opacity = '0';
+                productCard.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    productCard.style.transition = 'all 0.5s ease';
+                    productCard.style.opacity = '1';
+                    productCard.style.transform = 'translateY(0)';
+                }, productsToShow.indexOf(product) * 100);
+                
+                grid.appendChild(productCard);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            saveCart();
+            updateCartCount();
+            showNotification();
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            cartItems.innerHTML = '';
+            
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <span>${item.name} (${item.quantity})</span>
+                    <span>${item.priceDisplay} x ${item.quantity} = ฿${(item.price * item.quantity).toFixed(2)}</span>
+                    <button onclick="removeFromCart(${item.id})">ลบ</button>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            cartTotal.textContent = `ยอดรวม: ฿${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(productId) {
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem.quantity > 1) {
+                cartItem.quantity -= 1;
+            } else {
+                cart = cart.filter(item => item.id !== productId);
+            }
+            saveCart();
+            updateCartCount();
+            renderCart();
+        }
+
+        function filterProducts(category) {
+            currentCategory = category;
+            const filteredProducts = category === 'all' ? products : products.filter(p => p.category === category);
+            renderProducts(filteredProducts);
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) || 
+                product.description.toLowerCase().includes(searchTerm)
+            );
+            
+            if (currentCategory !== 'all') {
+                const categoryFiltered = filteredProducts.filter(p => p.category === currentCategory);
+                renderProducts(categoryFiltered);
+            } else {
+                renderProducts(filteredProducts);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartCount();
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterProducts(e.target.dataset.category);
+                });
+            });
+            
+            document.getElementById('searchInput').addEventListener('input', searchProducts);
+            
+            const cartBtn = document.getElementById('cartBtn');
+            const cartModal = document.getElementById('cartModal');
+            const closeCart = document.getElementById('closeCart');
+
+            cartBtn.addEventListener('click', () => {
+                renderCart();
+                cartModal.style.display = 'flex';
+            });
+
+            closeCart.addEventListener('click', () => {
+                cartModal.style.display = 'none';
+            });
+
+            cartModal.addEventListener('click', (e) => {
+                if (e.target === cartModal) {
+                    cartModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
